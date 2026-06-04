@@ -1,0 +1,54 @@
+# FastAPI 파라미터 종류
+
+## Query Parameter
+URL 뒤에 `?` 로 붙는 값
+```python
+def get_users(page: int = 1, size: int = 10):
+# GET /users?page=1&size=10
+```
+페이지네이션, 필터링, 검색 같은 곳에서 주로 씀
+
+---
+
+## Path Parameter
+URL 경로 안에 있는 값
+```python
+def get_user(user_id: int):
+# GET /users/42
+```
+특정 리소스 하나를 지정할 때 씀
+
+---
+
+## Body
+요청 본문에 JSON으로 오는 값
+```python
+def register(body: RegisterRequest):
+# POST /auth/register
+# {"email": "...", "password": "...", "nickname": "..."}
+```
+회원가입, 로그인처럼 데이터를 생성하거나 전송할 때 씀
+`BaseModel` 을 상속한 클래스면 FastAPI가 자동으로 body로 인식함
+
+---
+
+## Header / Cookie
+헤더나 쿠키에서 꺼내는 값
+```python
+from fastapi import Header, Cookie
+
+def something(token: str = Header(...)):
+```
+JWT 토큰 같은 인증 정보를 꺼낼 때 씀
+우리 프로젝트에서는 `HTTPBearer` 가 헤더에서 토큰을 자동으로 꺼내줌
+
+---
+
+## FastAPI 자동 판단 규칙
+
+| 타입 | FastAPI가 인식하는 위치 |
+|---|---|
+| `BaseModel` 상속 클래스 | Body |
+| `int`, `str` 등 기본 타입 | Query Parameter |
+| 경로에 `{user_id}` 있으면 | Path Parameter |
+| `Depends(...)` | 의존성 주입 |
